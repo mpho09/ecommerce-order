@@ -458,3 +458,35 @@ function lookUpProduct() {
     result.innerHTML = `<span class="text-red-600">"${safe(productBox.value)}" is not a product in this store.</span>`;
   }
 }
+
+//CHALLENGE 8
+function validateValue() {
+  const value = validateBox.value.trim();
+  const result = document.getElementById("validate-result");
+  const pattern = validateType.value === "email" ? EMAIL_PATTERN : ORDER_ID_PATTERN;
+
+  if (value === "") {
+    result.textContent = "";
+  } else if (pattern.test(value)) {
+    result.innerHTML = '<span class="text-green-700">✓ Valid</span>';
+  } else {
+    result.innerHTML = '<span class="text-red-600">✗ Not valid</span>';
+  }
+}
+
+
+function showCleaningTable() {
+  let rows = "";
+  for (const order of cleanOrders) {
+    rows += `
+      <tr class="border-b">
+        <td class="p-2 font-mono text-xs whitespace-pre">"${safe(order.originalName)}"</td>
+        <td class="p-2">${safe(order.customerName)}</td>
+        <td class="p-2">${safe(order.firstName)}</td>
+        <td class="p-2 font-mono text-xs whitespace-pre">"${safe(order.originalEmail)}"</td>
+        <td class="p-2">${safe(order.email)}</td>
+        <td class="p-2">${safe(order.domain)}</td>
+      </tr>`;
+  }
+  document.getElementById("cleaning-table").innerHTML = rows;
+}
