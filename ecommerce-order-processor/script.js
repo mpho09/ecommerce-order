@@ -413,10 +413,48 @@ function showCategories() {
   
   categorySelect.value = categories.has(previousChoice) ? previousChoice : "All";
 }
-
-
 function filterByCategory(category) {
   categorySelect.value = category;
   applyFilters();
   document.getElementById("orders").scrollIntoView();
+}
+
+
+//CHALLENGE 6
+
+let productMap = new Map();
+
+function buildProductMap() {
+  productMap = new Map();
+  for (const order of cleanOrders) {
+    
+    productMap.set(order.product.toLowerCase(), {
+      name: order.product,
+      category: order.category,
+      price: order.price
+    });
+  }
+
+  let suggestions = "";
+  for (const product of productMap.values()) {
+    suggestions += `<option value="${safe(product.name)}"></option>`;
+  }
+  document.getElementById("product-names").innerHTML = suggestions;
+}
+
+function lookUpProduct() {
+  const name = productBox.value.trim().toLowerCase();
+  const result = document.getElementById("product-result");
+
+  if (name === "") {
+    result.innerHTML = `<span class="text-slate-500">There are ${productMap.size} products. Start typing a name.</span>`;
+  } else if (productMap.has(name)) {
+    const product = productMap.get(name);
+    result.innerHTML = `
+      <p><b>${safe(product.name)}</b></p>
+      <p>Category: ${safe(product.category)}</p>
+      <p>Price: ${formatPrice(product.price)}</p>`;
+  } else {
+    result.innerHTML = `<span class="text-red-600">"${safe(productBox.value)}" is not a product in this store.</span>`;
+  }
 }

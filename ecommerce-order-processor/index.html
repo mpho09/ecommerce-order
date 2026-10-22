@@ -3,88 +3,161 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>E-commerce Order Processor</title>
-  
+  <title>E-Commerce Order Processor</title>
+ 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-100 text-slate-800">
 
-  
-  <header class="bg-indigo-700 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <h1 class="text-2xl font-bold tracking-tight">E-commerce Order Processor</h1>
-      <!-- <nav class="flex flex-wrap gap-4 text-sm text-indigo-100">
-        <a href="#orders" class="hover:text-white">Orders</a>
-        <a href="#search-filter" class="hover:text-white">Search / Filter</a>
-        <a href="#statistics" class="hover:text-white">Statistics</a>
-        <a href="#categories" class="hover:text-white">Categories</a>
-        <a href="#product-lookup" class="hover:text-white">Product Lookup</a>
-        <a href="#data-processing" class="hover:text-white">Data Processing</a>
-      </nav> -->
-    </div>
+
+  <header class="bg-indigo-700 text-white p-5">
+    <h1 class="text-2xl font-bold">E-Commerce Order Processor</h1>
+    <p class="text-indigo-200 text-sm">Clean, analyse and report on online orders</p>
   </header>
 
- 
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 grid gap-6 lg:grid-cols-3">
-
-    
-    <section id="search-filter" class="lg:col-span-3 bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Search / Filter</h2>
-      <div id="search-filter-content" class="text-slate-400 text-sm">
-       
-      </div>
-    </section>
-
-  
-      
-    <section id="orders" class="lg:col-span-3 bg-white rounded-xl shadow p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold">Orders</h2>
-        <span id="orders-count" class="text-sm text-slate-500"></span>
-      </div>
-      <div id="orders-content" class="text-sm">
-      
-      </div>
-    </section>
+  <main class="max-w-6xl mx-auto p-4 space-y-6">
 
    
     <section id="statistics" class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Statistics</h2>
-      <div id="statistics-content" class="text-slate-400 text-sm">
-      
-      </div>
+      <h2 class="text-xl font-semibold mb-4">Statistics</h2>
+      <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+      <h3 class="font-semibold mt-6 mb-2">Orders per category</h3>
+      <ul id="category-counts" class="text-sm space-y-1"></ul>
     </section>
 
    
-    <section id="categories" class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Categories</h2>
-      <div id="categories-content" class="text-slate-400 text-sm">
-        
+    <section id="search-filter" class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Search / Filter</h2>
+
+      <div class="grid sm:grid-cols-2 md:grid-cols-5 gap-3">
+        <input id="search-box" type="text" placeholder="Search name, ID or product"
+          class="border rounded-lg p-2 md:col-span-2" />
+        <select id="category-select" class="border rounded-lg p-2">
+          <option value="All">All categories</option>
+        </select>
+        <input id="min-price" type="number" placeholder="Min price" class="border rounded-lg p-2" />
+        <input id="max-price" type="number" placeholder="Max price" class="border rounded-lg p-2" />
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4 mt-3 text-sm">
+        <select id="sort-select" class="border rounded-lg p-2">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+        <label><input id="recent-only" type="checkbox" class="mr-1" /> Recent orders only (last 30 days)</label>
+        <button id="clear-filters" class="border rounded-lg px-3 py-2 hover:bg-slate-100">Clear filters</button>
+      </div>
+      <p id="filter-result" class="text-sm text-slate-500 mt-3"></p>
+
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div>
+          <h3 class="font-semibold mb-2">Find one order</h3>
+          <div class="flex gap-2">
+            <input id="find-box" type="text" placeholder="e.g. ORD-1004 or Sipho Ndlovu"
+              class="border rounded-lg p-2 flex-1 min-w-0" />
+            <button id="find-button" class="bg-indigo-600 text-white rounded-lg px-4 hover:bg-indigo-700">Find</button>
+          </div>
+          <p id="find-result" class="text-sm mt-2"></p>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Quick checks</h3>
+          <ul id="quick-checks" class="text-sm space-y-1"></ul>
+        </div>
       </div>
     </section>
 
-    
-    <section id="product-lookup" class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Product Lookup</h2>
-      <div id="product-lookup-content" class="text-slate-400 text-sm">
-        
+  
+    <section id="orders" class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Orders</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-100 text-left">
+            <tr>
+              <th class="p-2">Order ID</th>
+              <th class="p-2">Customer</th>
+              <th class="p-2">Product</th>
+              <th class="p-2">Date</th>
+              <th class="p-2 text-right">Price</th>
+              <th class="p-2 text-center">Qty</th>
+              <th class="p-2 text-right">Total</th>
+              <th class="p-2">Status</th>
+            </tr>
+          </thead>
+          <tbody id="orders-table"></tbody>
+        </table>
       </div>
     </section>
 
-    
+    <div class="grid md:grid-cols-2 gap-6">
+     
+      <section id="categories" class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Categories</h2>
+        <div id="category-list" class="flex flex-wrap gap-2"></div>
+      </section>
+
+     
+      <section id="product-lookup" class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-xl font-semibold mb-4">Product Lookup</h2>
+        <input id="product-box" type="text" list="product-names" placeholder="Type a product name"
+          class="border rounded-lg p-2 w-full" />
+        <datalist id="product-names"></datalist>
+        <div id="product-result" class="text-sm mt-3"></div>
+      </section>
+    </div>
+
+   
     <section id="data-processing" class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-lg font-semibold mb-4">Data Processing</h2>
-      <div id="data-processing-content" class="text-slate-400 text-sm">
-      
+      <h2 class="text-xl font-semibold mb-4">Data Processing</h2>
+
+      <h3 class="font-semibold mb-2">Cleaned customer data</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-100 text-left">
+            <tr>
+              <th class="p-2">Original name</th>
+              <th class="p-2">Clean name</th>
+              <th class="p-2">First name</th>
+              <th class="p-2">Original email</th>
+              <th class="p-2">Clean email</th>
+              <th class="p-2">Domain</th>
+            </tr>
+          </thead>
+          <tbody id="cleaning-table"></tbody>
+        </table>
+      </div>
+
+      <h3 class="font-semibold mt-6 mb-2">Prices including 15% VAT</h3>
+      <ul id="vat-list" class="text-sm space-y-1"></ul>
+
+      <h3 class="font-semibold mt-6 mb-2">Validation tool</h3>
+      <div class="flex flex-wrap gap-2">
+        <select id="validate-type" class="border rounded-lg p-2">
+          <option value="email">Email</option>
+          <option value="orderId">Order ID</option>
+        </select>
+        <input id="validate-box" type="text" placeholder="Type a value to test" class="border rounded-lg p-2 flex-1 min-w-0" />
+      </div>
+      <p id="validate-result" class="text-sm mt-2"></p>
+
+      <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <div>
+          <h3 class="font-semibold mb-2">Export orders (JSON)</h3>
+          <textarea id="json-output" rows="12" readonly class="border rounded-lg p-2 w-full font-mono text-xs bg-slate-50"></textarea>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Import orders (JSON)</h3>
+          <textarea id="json-input" rows="12" placeholder="Paste JSON orders here"
+            class="border rounded-lg p-2 w-full font-mono text-xs"></textarea>
+          <div class="flex gap-2 mt-2">
+            <button id="import-button" class="bg-indigo-600 text-white rounded-lg px-4 py-2 hover:bg-indigo-700">Import</button>
+            <button id="example-button" class="border rounded-lg px-4 py-2 hover:bg-slate-100">Load example</button>
+          </div>
+          <p id="import-message" class="text-sm mt-2"></p>
+        </div>
       </div>
     </section>
 
   </main>
-
- 
-  <footer class="text-center text-xs text-slate-500 py-4">
-  
-  </footer>
 
   <script src="script.js"></script>
 </body>
