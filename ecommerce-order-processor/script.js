@@ -284,3 +284,139 @@ function getDomain(email) {
   }
   return email.slice(email.indexOf("@") + 1);
 }
+
+//CHALLENGE 2
+
+function formatPrice(amount) {
+  return "R " + amount.toFixed(2);
+}
+
+
+function roundMoney(amount) {
+  return Math.round(amount * 100) / 100;
+}
+
+//CHALLENGE 3 (RESEARCH)
+function toDate(text) {
+  return new Date(text + "T00:00:00");
+}
+
+
+function formatDate(date) {
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+}
+
+
+function formatShortDate(date) {
+  return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+}
+
+function getDaysAgo(date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);}
+
+  //CHALLENGE 4
+
+  function getFilteredOrders() {
+  const searchText = searchBox.value.trim().toLowerCase();
+  const category = categorySelect.value;
+  const minPrice = parseFloat(minPriceBox.value);
+  const maxPrice = parseFloat(maxPriceBox.value);
+
+  let results = cleanOrders.filter(order =>
+    order.customerName.toLowerCase().includes(searchText) ||
+    order.orderId.toLowerCase().includes(searchText) ||
+    order.product.toLowerCase().includes(searchText)
+  );
+
+  if (category !== "All") {
+    results = results.filter(order => order.category === category);
+  }
+  if (!isNaN(minPrice)) {
+    results = results.filter(order => order.price >= minPrice);
+  }
+  if (!isNaN(maxPrice)) {
+    results = results.filter(order => order.price <= maxPrice);
+  }
+  if (recentOnlyBox.checked) {
+    results = results.filter(order => order.isRecent);
+  }
+
+  return sortByDate(results, sortSelect.value);
+}
+
+function applyFilters() {
+  const results = getFilteredOrders();
+  showOrders(results);
+
+  const resultsTotal = results.reduce((sum, order) => sum + order.total, 0);
+  document.getElementById("filter-result").textContent =
+    "Showing " + results.length + " of " + cleanOrders.length + " orders. Total: " + formatPrice(resultsTotal);
+}
+
+function clearFilters() {
+  searchBox.value = "";
+  categorySelect.value = "All";
+  minPriceBox.value = "";
+  maxPriceBox.value = "";
+  sortSelect.value = "newest";
+  recentOnlyBox.checked = false;
+  applyFilters();
+}
+
+function findOrder() {
+  const text = findBox.value.trim().toLowerCase();
+  const result = document.getElementById("find-result");
+
+  const order = cleanOrders.find(order =>
+    order.orderId.toLowerCase() === text || order.customerName.toLowerCase() === text
+  );}
+
+  function showVatList() {
+  const vatList = cleanOrders.map(order =>
+    order.product + ": " + formatPrice(order.total) + " → " + formatPrice(order.totalWithVat) + " incl. VAT"
+  );
+
+  document.getElementById("vat-list").innerHTML = vatList.map(line => "<li>" + safe(line) + "</li>").join("");
+}
+
+//CHALLENGE 5
+
+function getCategories() {
+  const allCategories = cleanOrders.map(order => order.category);
+  return new Set(allCategories); 
+}
+
+function showCategories() {
+  const categories = getCategories();
+  const previousChoice = categorySelect.value;
+  const categoryList = document.getElementById("category-list");
+
+  categoryList.innerHTML = "";
+  categorySelect.innerHTML = '<option value="All">All categories</option>';
+
+  for (const category of categories) {
+   
+    const button = document.createElement("button");
+    button.textContent = category;
+    button.className = "bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full px-3 py-1 text-sm hover:bg-indigo-100";
+    button.addEventListener("click", () => filterByCategory(category));
+    categoryList.appendChild(button);
+
+   
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categorySelect.appendChild(option);
+  }
+
+  
+  categorySelect.value = categories.has(previousChoice) ? previousChoice : "All";
+}
+
+
+function filterByCategory(category) {
+  categorySelect.value = category;
+  applyFilters();
+  document.getElementById("orders").scrollIntoView();
+}
