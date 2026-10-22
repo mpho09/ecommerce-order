@@ -170,3 +170,91 @@ const orders = [
 ];
 
 
+const currency = new Intl.NumberFormat("en-ZA", {
+  style: "currency",
+  currency: "ZAR"
+});
+
+
+function formatDate(isoDate) {
+  return new Date(isoDate).toLocaleDateString("en-ZA", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
+}
+
+// Tailwind colours
+const statusStyles = {
+  Pending: "bg-amber-100 text-amber-800",
+  Processing: "bg-sky-100 text-sky-800",
+  Shipped: "bg-indigo-100 text-indigo-800",
+  Delivered: "bg-emerald-100 text-emerald-800",
+  Cancelled: "bg-rose-100 text-rose-800"
+};
+
+//The order function
+function createOrderRow(order) {
+  const total = order.price * order.quantity;
+  const badge = statusStyles[order.status] || "bg-slate-100 text-slate-700";
+
+  return `
+    <tr class="hover:bg-slate-50">
+      <td class="px-3 py-3 font-mono text-xs text-slate-600 whitespace-nowrap">${order.orderId}</td>
+      <td class="px-3 py-3">
+        <div class="font-medium text-slate-800">${order.customerName}</div>
+        <div class="text-xs text-slate-500">${order.email}</div>
+      </td>
+      <td class="px-3 py-3">
+        <div class="text-slate-800">${order.product}</div>
+        <div class="text-xs text-slate-500">${order.category}</div>
+      </td>
+      <td class="px-3 py-3 text-right whitespace-nowrap">${currency.format(order.price)}</td>
+      <td class="px-3 py-3 text-center">${order.quantity}</td>
+      <td class="px-3 py-3 text-right font-semibold whitespace-nowrap">${currency.format(total)}</td>
+      <td class="px-3 py-3 whitespace-nowrap text-slate-600">${formatDate(order.orderDate)}</td>
+      <td class="px-3 py-3">
+        <span class="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${badge}">${order.status}</span>
+      </td>
+    </tr>`;
+}
+
+
+function renderOrders(orderList) {
+  const container = document.getElementById("orders-content");
+  const count = document.getElementById("orders-count");
+
+  count.textContent = `${orderList.length} order${orderList.length === 1 ? "" : "s"}`;
+
+  if (orderList.length === 0) {
+    container.innerHTML = `<p class="text-slate-400 py-6 text-center">No orders found.</p>`;
+    return;
+  }
+
+  const rows = orderList.map(createOrderRow).join("");
+
+  container.innerHTML = `
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-3 py-2">Order ID</th>
+            <th class="px-3 py-2">Customer</th>
+            <th class="px-3 py-2">Product</th>
+            <th class="px-3 py-2 text-right">Price</th>
+            <th class="px-3 py-2 text-center">Qty</th>
+            <th class="px-3 py-2 text-right">Total</th>
+            <th class="px-3 py-2">Date</th>
+            <th class="px-3 py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          ${rows}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderOrders(orders);
+});
