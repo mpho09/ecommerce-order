@@ -1,7 +1,7 @@
 const orders = [
   {
     orderId: "ORD-1001",
-    customerName: "LeRato   Mokoena",
+    customerName: "Lerato   Mokoena",
     email: "leratomokoena@gmail.com",
     product: "Wireless Headphones",
     category: "Electronics",
@@ -15,7 +15,7 @@ const orders = [
   },
   {
     orderId: "ORD-1002",
-    customerName: "James CartER",
+    customerName: "James Carter",
     email: "james.c@outlook.com",
     product: "Running Shoes",
     category: "Sportswear",
@@ -29,7 +29,7 @@ const orders = [
   },
   {
     orderId: "ORD-1003",
-    customerName: "AIshA Patel",
+    customerName: "Aisha Patel",
     email: "aisha24@gmail.com",
     product: "Coffee Maker",
     category: "Home & Kitchen",
@@ -258,3 +258,29 @@ function renderOrders(orderList) {
 document.addEventListener("DOMContentLoaded", () => {
   renderOrders(orders);
 });
+
+//CHALLENGE 1
+
+function cleanName(name) {
+  const words = name.trim().split(" ").filter(word => word !== ""); // remove extra spaces
+  const fixedWords = words.map(word => word[0].toUpperCase() + word.slice(1).toLowerCase());
+  return fixedWords.join(" ");
+}
+
+
+function cleanEmail(email) {
+  return email.replaceAll(" ", "").toLowerCase();
+}
+
+
+function getFirstName(name) {
+  return name.split(" ")[0];
+}
+
+
+function getDomain(email) {
+  if (!email.includes("@")) {
+    return "none";
+  }
+  return email.slice(email.indexOf("@") + 1);
+}
